@@ -1,0 +1,32 @@
+.pane{
+    -fx-background-radius: 20px;
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(three-pass-box, rgba(147, 147, 147, 0.8), 10, 0, 0, 0);
+}
+.image{
+    -fx-effect: dropshadow(three-pass-box, rgba(147, 147, 147, 0.8), 10, 0, 0, 0);
+}
+.textFld{
+    -fx-background-radius: 20px;
+    -fx-background-color: #ffffff;
+    -fx-effect: dropshadow(three-pass-box, rgba(147, 147, 147, 0.8), 10, 0, 0, 0);
+    -fx-text-fill: #3b3b3b;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+.textFld:focused{
+  -fx-border-color: #003062;
+    -fx-border-width: 2px;
+    -fx-border-radius: 20px;
+}
+.btn {
+    -fx-background-radius: 20px;
+    -fx-background-color: transparent;
+    -fx-border-radius: 20px;
+    -fx-border-color: #3b3b3b;
+    -fx-border-width: 2px;
+}
+.btn:hover {
+    -fx-background-color: #3b3b3b;
+    -fx-text-fill: #ffffff;
+}
