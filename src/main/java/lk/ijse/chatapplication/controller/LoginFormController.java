@@ -34,7 +34,6 @@ public class LoginFormController {
     private void onAction(ActionEvent actionEvent) {
         if(loginService.validateName(nameFld.getText())){
             Stage stage = new Stage();
-            nameFld.clear();
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/ChatForm.fxml"));
                 Parent root = fxmlLoader.load();
@@ -46,6 +45,8 @@ public class LoginFormController {
                 stage.centerOnScreen();
                 stage.setResizable(false);
                 stage.show();
+                nameFld.clear();
+                nameFld.setStyle("-fx-border-color: none");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

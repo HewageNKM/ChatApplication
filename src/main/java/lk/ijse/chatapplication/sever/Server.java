@@ -72,11 +72,12 @@ public class Server implements Runnable {
                 while (true) {
                     String message = dataInputStream.readUTF();
                     if (message.startsWith("/e") || message.startsWith("/E")) {
-                        clientHandlers.remove(this);
                         broadCastMessage(name.toUpperCase()+" has left the chat");
                         dataOutputStream.close();
                         dataInputStream.close();
                         client.close();
+                        clientHandlers.remove(this);
+                        break;
                     }else if (message.startsWith("/n") || message.startsWith("/N")){
                         String[] split = message.split(" ");
                         String newName = split[1];

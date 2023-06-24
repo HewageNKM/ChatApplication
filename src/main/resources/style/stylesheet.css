@@ -30,3 +30,22 @@
     -fx-background-color: #3b3b3b;
     -fx-text-fill: #ffffff;
 }
+.emojiBtn{
+    -fx-background-radius: 20px;
+    -fx-background-color: #ffdda0;
+    -fx-border-radius: 20px;
+    -fx-border-width: 2px;
+}
+.scrollPane{
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-background-color: #ffffff;
+}
+.messageVbox{
+    -fx-background-radius: 20px;
+    -fx-background-color: #ffffff;
+    -fx-border-radius: 20px;
+}
+.messageRoot{
+    -fx-background-color: #efefef;
+}
