@@ -11,6 +11,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import lk.ijse.chatapplication.Client.Client;
+import lk.ijse.chatapplication.service.ServiceFactory;
 import lk.ijse.chatapplication.service.impl.LoginServiceImpl;
 import lk.ijse.chatapplication.service.interfaces.LoginService;
 
@@ -26,7 +27,7 @@ public class LoginFormController {
     @FXML
     private Button loginBtn;
     private ExecutorService pool = Executors.newCachedThreadPool();
-    private final LoginService loginService = new LoginServiceImpl();
+    private final LoginService loginService = (LoginServiceImpl) ServiceFactory.getServiceFactory().getService(ServiceFactory.ServiceType.LOGIN);
     public void initialize(){
         loginBtn.setTooltip(new Tooltip("Login To Chat"));
     }
