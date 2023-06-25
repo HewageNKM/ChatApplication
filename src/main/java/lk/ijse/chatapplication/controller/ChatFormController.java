@@ -11,12 +11,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import lk.ijse.chatapplication.DAO.DAOFactory;
 import lk.ijse.chatapplication.service.ServiceFactory;
 import lk.ijse.chatapplication.service.impl.ChatServiceImpl;
 import lk.ijse.chatapplication.service.interfaces.ChatService;
+import lk.ijse.chatapplication.sever.Server;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -27,7 +30,11 @@ import java.util.ArrayList;
 
 
 public class ChatFormController {
-    public Button sendBtn;
+    public ScrollPane emojiPane;
+    @FXML
+    private Button sendBtn;
+    @FXML
+    private VBox emojiBox;
     @FXML
     private AnchorPane rootPane;
     @FXML
@@ -44,6 +51,7 @@ public class ChatFormController {
     private File file;
 
     public void initialize(String n) {
+        emojiPane.setVisible(false);
         setNameLabel(n);
         loadEmojis();
         setScrollBar();
@@ -131,14 +139,14 @@ public class ChatFormController {
                 label = new Label("Me: ");
                 messageBox.setSpacing(8);
                 messageBox.setPadding(new javafx.geometry.Insets(10,10,10,10));
-                label.setStyle("-fx-background-color: #01a64e"+";"+"-fx-background-radius: 20px"+";"+"-fx-text-fill: white"+";"+"-fx-padding: 10px");
+                label.setStyle("-fx-background-color: #01a64e"+";"+"-fx-background-radius: 20px"+";"+"-fx-text-fill: white"+";"+"-fx-padding: 10px"+";"+"-fx-font-family: 'Noto Emoji', sans-serif"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 15px");
                 messageBox.getChildren().add(label);
             }else {
                 label = new Label(sender+": ");
                 System.out.println(sender);
                 messageBox.setSpacing(8);
                 messageBox.setPadding(new javafx.geometry.Insets(10,10,10,10));
-                label.setStyle("-fx-background-color: #00bfff"+";"+"-fx-background-radius: 20px"+";"+"-fx-text-fill: white"+";"+"-fx-padding: 10px");
+                label.setStyle("-fx-background-color: #00bfff"+";"+"-fx-background-radius: 20px"+";"+"-fx-text-fill: white"+";"+"-fx-padding: 10px"+";"+"-fx-font-family: 'Noto Emoji', sans-serif"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 15px");
                 messageBox.getChildren().add(label);
             }
         });
@@ -163,6 +171,25 @@ public class ChatFormController {
     }
 
     private void loadEmojis() {
+        ArrayList<String> emojis = new ArrayList<>();
+        emojis.add("😀");
+        emojis.add("\uD83D\uDE42");
+        emojis.add("\uD83D\uDE44");
+        emojis.add("\uD83D\uDE19");
+        emojis.add("\uD83D\uDE10");
+        emojis.add("\uD83D\uDE34");
+        emojis.add("\uD83D\uDE37");
+        emojis.add("\uD83D\uDE21");
+        emojiBox.setPadding(new javafx.geometry.Insets(10,10,10,10));
+        emojiBox.setSpacing(10);
+        for (String emoji:emojis){
+            Label btn = new Label(emoji);
+            btn.setStyle("-fx-font-size: 20px");
+            btn.setOnMouseClicked(event -> {
+                messageFld.setText(messageFld.getText()+emoji);
+            });
+            emojiBox.getChildren().add(btn);
+        }
 
     }
 
@@ -182,13 +209,13 @@ public class ChatFormController {
                 label = new Label("Me: "+messages[1]);
                 messageBox.setSpacing(8);
                 messageBox.setPadding(new javafx.geometry.Insets(10,10,10,10));
-                label.setStyle("-fx-background-color: #01a64e"+";"+"-fx-background-radius: 20px"+";"+"-fx-text-fill: white"+";"+"-fx-padding: 10px");
+                label.setStyle("-fx-background-color: #01a64e"+";"+"-fx-background-radius: 20px"+";"+"-fx-text-fill: white"+";"+"-fx-padding: 10px"+";"+"-fx-font-family: 'Noto Emoji', sans-serif"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 15px");
                 messageBox.getChildren().add(label);
             }else {
                 label = new Label(message);
                 messageBox.setSpacing(8);
                 messageBox.setPadding(new javafx.geometry.Insets(10,10,10,10));
-                label.setStyle("-fx-background-color: #00bfff"+";"+"-fx-background-radius: 20px"+";"+"-fx-text-fill: white"+";"+"-fx-padding: 10px");
+                label.setStyle("-fx-background-color: #00bfff"+";"+"-fx-background-radius: 20px"+";"+"-fx-text-fill: white"+";"+"-fx-padding: 10px"+";"+"-fx-font-family: 'Noto Emoji', sans-serif"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 15px");
                 messageBox.getChildren().add(label);
             }
         });
@@ -232,14 +259,15 @@ public class ChatFormController {
         imgView.setImage(image);
     }
     @FXML
-    private void emojiAction(ActionEvent actionEvent) {
-        ArrayList<String> emojis = new ArrayList<>();
-        emojis.add("😀");
-        Button button = new Button(emojis.get(0));
-        HBox hBox = new HBox(button);
-        hBox.setSpacing(10);
-        hBox.setPadding(new Insets(10,10,10,10));
-        rootPane.getChildren().add(hBox);
-        //messageFld.appendText(emojis.get(0));
+    private void OnMouseEnterEmojiBox(MouseEvent mouseEvent) {
+        emojiPane.setVisible(true);
+    }
+
+    public void emojiBtnAction(ActionEvent actionEvent) {
+        emojiPane.setVisible(true);
+    }
+
+    public void bgClickedAction(MouseEvent mouseEvent) {
+        emojiPane.setVisible(false);
     }
 }

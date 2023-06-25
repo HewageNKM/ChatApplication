@@ -22,7 +22,7 @@ public class Server implements Runnable {
    private ServerSocket serverSocket;
    private final ArrayList<ClientHandler> clientHandlers;
 
-    private Server() {
+   private Server() {
        clientHandlers = new ArrayList<>();
    }
    private void shutDown(){

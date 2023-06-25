@@ -7,8 +7,9 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
-<AnchorPane fx:id="rootPane" prefHeight="800.0" prefWidth="700.0" stylesheets="@../style/stylesheet.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.chatapplication.controller.ChatFormController">
+<AnchorPane fx:id="rootPane" onMouseClicked="#bgClickedAction" prefHeight="800.0" prefWidth="700.0" stylesheets="@../style/stylesheet.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.chatapplication.controller.ChatFormController">
    <children>
       <TextField fx:id="messageFld" layoutX="57.0" layoutY="728.0" onAction="#sendAction" prefHeight="31.0" prefWidth="388.0" promptText="Message" styleClass="textFld" />
       <Button fx:id="sendBtn" layoutX="569.0" layoutY="726.0" mnemonicParsing="false" onAction="#sendAction" prefHeight="35.0" prefWidth="80.0" styleClass="btn" text="Send" />
@@ -27,14 +28,15 @@
                <image>
                   <Image url="@../asset/avatarNotAnimated.png" />
                </image></ImageView>
+            <Circle fill="#11ff00" layoutX="76.0" layoutY="46.0" radius="10.0" stroke="#11ff00" strokeType="INSIDE" />
          </children>
       </AnchorPane>
-      <ScrollPane layoutX="48.0" layoutY="87.0" styleClass="pane">
+      <ScrollPane layoutX="48.0" layoutY="87.0" onMouseClicked="#bgClickedAction" styleClass="pane">
          <content>
             <VBox fx:id="messageBox" prefHeight="609.0" prefWidth="584.0" styleClass="pane" stylesheets="@../style/stylesheet.css" />
          </content>
       </ScrollPane>
-      <Button contentDisplay="GRAPHIC_ONLY" layoutX="455.0" layoutY="724.0" mnemonicParsing="false" onAction="#emojiAction" prefHeight="40.0" prefWidth="40.0" styleClass="emojiBtn">
+      <Button contentDisplay="GRAPHIC_ONLY" layoutX="455.0" layoutY="724.0" mnemonicParsing="false" onAction="#emojiBtnAction" prefHeight="40.0" prefWidth="40.0" styleClass="emojiBtn">
          <graphic>
             <ImageView fitHeight="30.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -43,5 +45,10 @@
             </ImageView>
          </graphic>
       </Button>
+      <ScrollPane fx:id="emojiPane" layoutX="430.0" layoutY="628.0" onMouseEntered="#OnMouseEnterEmojiBox">
+         <content>
+            <VBox fx:id="emojiBox" prefHeight="145.0" prefWidth="90.0" />
+         </content>
+      </ScrollPane>
    </children>
 </AnchorPane>
