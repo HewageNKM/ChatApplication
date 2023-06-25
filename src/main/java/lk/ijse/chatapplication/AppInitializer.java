@@ -13,9 +13,10 @@ import java.util.Objects;
 public class AppInitializer extends Application {
     @Override
     public void start(Stage primaryStage) {
-      Thread serverThread = new Thread(new Server());
-      serverThread.start();
-        try {
+      new Thread(()->{
+          Server.getInstance().run();
+        }).start();
+          try {
             primaryStage.setScene(new Scene(FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/LoginForm.fxml")))));
             primaryStage.setTitle("Login Form");
             primaryStage.getIcons().add(new Image("/asset/login.png"));

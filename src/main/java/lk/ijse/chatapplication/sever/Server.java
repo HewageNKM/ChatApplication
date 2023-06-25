@@ -11,10 +11,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server implements Runnable {
+   private static Server server;
+    public static Server getInstance(){
+         if(server==null){
+              server = new Server();
+         }
+         return server;
+    }
+
    private ServerSocket serverSocket;
    private final ArrayList<ClientHandler> clientHandlers;
 
-    public Server() {
+    private Server() {
        clientHandlers = new ArrayList<>();
    }
    private void shutDown(){

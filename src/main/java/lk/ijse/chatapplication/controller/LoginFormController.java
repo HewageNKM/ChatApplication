@@ -26,7 +26,6 @@ public class LoginFormController {
     private TextField nameFld;
     @FXML
     private Button loginBtn;
-    private ExecutorService pool = Executors.newCachedThreadPool();
     private final LoginService loginService = (LoginServiceImpl) ServiceFactory.getServiceFactory().getService(ServiceFactory.ServiceType.LOGIN);
     public void initialize(){
         loginBtn.setTooltip(new Tooltip("Login To Chat"));
