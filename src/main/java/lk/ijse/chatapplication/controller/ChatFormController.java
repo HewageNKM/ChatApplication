@@ -15,6 +15,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lk.ijse.chatapplication.DAO.DAOFactory;
 import lk.ijse.chatapplication.service.ServiceFactory;
 import lk.ijse.chatapplication.service.impl.ChatServiceImpl;
@@ -49,6 +50,8 @@ public class ChatFormController {
     private String name;
     private final ChatService chatService = (ChatServiceImpl)ServiceFactory.getServiceFactory().getService(ServiceFactory.ServiceType.CHAT);
     private File file;
+    private Thread thread;
+    private boolean done = false;
 
     public void initialize(String n) {
         emojiPane.setVisible(false);
@@ -56,28 +59,32 @@ public class ChatFormController {
         loadEmojis();
         setScrollBar();
         validateMessage();
-        n=n.toUpperCase();
+        n = n.toUpperCase();
         this.name = n;
-        new Thread(()->{
-            try {
-                client = new Socket("localhost",6565);
-                dataOutputStream = new DataOutputStream(client.getOutputStream());
-                dataOutputStream.writeUTF(name);
-                dataInputStream = new DataInputStream(client.getInputStream());
-                String message;
-                while (true){
-                    message = dataInputStream.readUTF();
-                    if(message.startsWith("<img>")){
-                        displayImage();
-                    }else {
-                        displayMessage(message);
+         thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    client = new Socket("localhost",6565);
+                    dataOutputStream = new DataOutputStream(client.getOutputStream());
+                    dataOutputStream.writeUTF(name);
+                    dataInputStream = new DataInputStream(client.getInputStream());
+                    while (!done){
+                       String message = dataInputStream.readUTF();
+                        if(message.startsWith("<img>")){
+                            displayImage();
+                        }else {
+                            displayMessage(message);
+                        }
                     }
+                } catch (IOException e) {
+                    System.out.println(e.getLocalizedMessage());
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-        }).start();
+        });
+        thread.start();
     }
+
 
     private void displayImage() throws IOException {
         System.out.println("Image received");
@@ -98,7 +105,6 @@ public class ChatFormController {
         imageView.setFitWidth(100);
         Platform.runLater(()->{
             messageBox.getChildren().add(imageView);
-            System.out.println("Image displayed");
         });
         imageView.setOnMouseClicked(event -> {
             FileChooser fileChooser = new FileChooser();
@@ -125,7 +131,13 @@ public class ChatFormController {
                     }
                     ImageIO.write(SwingFXUtils.fromFXImage(img, null), "jpg", file);
                 } catch (IOException ex) {
-                    System.out.println(ex.getMessage());
+                    Platform.runLater(()->{
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Error");
+                        alert.setHeaderText("Error");
+                        alert.setContentText("Image not saved");
+                        alert.show();
+                    });
                 }
             }
         });
@@ -135,7 +147,6 @@ public class ChatFormController {
         Platform.runLater(()->{
             Label label;
             if(sender.equalsIgnoreCase(name)){
-                System.out.println(sender);
                 label = new Label("Me: ");
                 messageBox.setSpacing(8);
                 messageBox.setPadding(new javafx.geometry.Insets(10,10,10,10));
@@ -143,7 +154,6 @@ public class ChatFormController {
                 messageBox.getChildren().add(label);
             }else {
                 label = new Label(sender+": ");
-                System.out.println(sender);
                 messageBox.setSpacing(8);
                 messageBox.setPadding(new javafx.geometry.Insets(10,10,10,10));
                 label.setStyle("-fx-background-color: #00bfff"+";"+"-fx-background-radius: 20px"+";"+"-fx-text-fill: white"+";"+"-fx-padding: 10px"+";"+"-fx-font-family: 'Noto Emoji', sans-serif"+";"+"-fx-font-weight: bold"+";"+"-fx-font-size: 15px");
@@ -227,13 +237,42 @@ public class ChatFormController {
                 sendBtn.setDisable(true);
             }else {
                 String message = messageFld.getText();
-                chatService.sendMessage(message,client);
-                messageFld.clear();
+                if(message.startsWith("/Exit") || message.startsWith("/exit")){
+                    chatService.sendMessage(message,client);
+                    quit();
+                }else {
+                    chatService.sendMessage(message,client);
+                    messageFld.clear();
+                }
+
             }
         } catch (IOException e) {
-            new Alert(Alert.AlertType.ERROR,e.getLocalizedMessage()).show();
+            Platform.runLater(()->{
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Error sending message");
+                alert.setContentText("Error sending message");
+                alert.showAndWait();
+            });
         }
     }
+
+    private void quit() {
+        try {
+            dataInputStream.close();
+            dataOutputStream.close();
+            client.close();
+            done = true;
+            thread.interrupt();
+            Platform.runLater(()->{
+                Stage stage = (Stage) rootPane.getScene().getWindow();
+                stage.close();
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @FXML
     private void attachmentAction(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();

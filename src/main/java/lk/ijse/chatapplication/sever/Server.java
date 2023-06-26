@@ -1,5 +1,8 @@
 package lk.ijse.chatapplication.sever;
 
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -12,6 +15,7 @@ import java.util.concurrent.Executors;
 
 public class Server implements Runnable {
    private static Server server;
+    private final ArrayList<ClientHandler> clientHandlers;
     public static Server getInstance(){
          if(server==null){
               server = new Server();
@@ -19,36 +23,21 @@ public class Server implements Runnable {
          return server;
     }
 
-   private ServerSocket serverSocket;
-   private final ArrayList<ClientHandler> clientHandlers;
-
    private Server() {
        clientHandlers = new ArrayList<>();
-   }
-   private void shutDown(){
-         try {
-             if (!serverSocket.isClosed()){
-                 serverSocket.close();
-             }
-         } catch (IOException e) {
-             throw new RuntimeException(e);
-         }
    }
     @Override
     public void run() {
         try {
-            serverSocket = new ServerSocket(6565);
+            ServerSocket serverSocket = new ServerSocket(6565);
             ExecutorService pool = Executors.newCachedThreadPool();
-            System.out.println("Server is waiting for clients");
             while(true){
                 Socket client = serverSocket.accept();
-                System.out.println("Client Request Accepted");
                 ClientHandler clientHandler = new ClientHandler(client);
                 pool.execute(clientHandler);
                 clientHandlers.add(clientHandler);
             }
         } catch (IOException e) {
-            shutDown();
             throw new RuntimeException(e);
         }
     }
@@ -66,7 +55,6 @@ public class Server implements Runnable {
 
     private class ClientHandler implements Runnable {
         private final Socket client;
-        private String name;
         private DataInputStream dataInputStream;
         private DataOutputStream dataOutputStream;
 
@@ -79,25 +67,32 @@ public class Server implements Runnable {
             try {
                 dataInputStream = new DataInputStream(client.getInputStream());
                 dataOutputStream = new DataOutputStream(client.getOutputStream());
-                name = dataInputStream.readUTF();
+                String name = dataInputStream.readUTF();
                 broadCastMessage(name.toUpperCase()+" has joined the chat");
                 while (true) {
                     String message = dataInputStream.readUTF();
                     if(message.startsWith("<img>")){
                         handleImage(dataInputStream);
+                    }else if(message.equalsIgnoreCase("/exit")){
+                        broadCastMessage(name.toUpperCase()+" has left the chat");
+                        shutDownClient();
+                        break;
                     }else {
-                        broadCastMessage(name+": "+message);
+                        broadCastMessage(name +": "+message);
                     }
                 }
             } catch (IOException e) {
-                try {
-                    client.close();
-                    shutDown();
-                    dataOutputStream.close();
-                    dataInputStream.close();
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                throw new RuntimeException(e);
+            }
+        }
+
+        private void shutDownClient() {
+            try {
+                clientHandlers.remove(this);
+                client.close();
+                dataOutputStream.close();
+                dataInputStream.close();
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -119,7 +114,10 @@ public class Server implements Runnable {
                 dataOutputStream.writeUTF(name);
                 dataOutputStream.flush();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                Platform.runLater(()->{
+                    new Alert(Alert.AlertType.ERROR,e.getLocalizedMessage()).show();
+                    e.printStackTrace();
+                });
             }
         }
     }

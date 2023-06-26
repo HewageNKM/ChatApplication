@@ -35,7 +35,6 @@ public class ChatDAOImpl implements ChatDAO {
                 dataOutputStream.writeUTF("jpg");
                 dataOutputStream.writeUTF(senderName);
                 dataOutputStream.flush();
-                System.out.println("Image sent " + file.getName());
                 break;
             }
             case "png": {
@@ -50,7 +49,6 @@ public class ChatDAOImpl implements ChatDAO {
                 dataOutputStream.writeUTF("png");
                 dataOutputStream.writeUTF(senderName);
                 dataOutputStream.flush();
-                System.out.println("Image sent " + file.getName());
                 break;
             }
             case "gif": {
@@ -65,7 +63,6 @@ public class ChatDAOImpl implements ChatDAO {
                 dataOutputStream.writeUTF("gif");
                 dataOutputStream.writeUTF(senderName);
                 dataOutputStream.flush();
-                System.out.println("Image sent " + file.getName());
                 break;
             }
         }
