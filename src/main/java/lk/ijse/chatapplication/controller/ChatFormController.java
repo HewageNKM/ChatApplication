@@ -10,17 +10,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import jdk.nashorn.internal.ir.annotations.Ignore;
-import lk.ijse.chatapplication.DAO.DAOFactory;
 import lk.ijse.chatapplication.service.ServiceFactory;
 import lk.ijse.chatapplication.service.impl.ChatServiceImpl;
 import lk.ijse.chatapplication.service.interfaces.ChatService;
-import lk.ijse.chatapplication.sever.Server;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -32,6 +29,8 @@ import java.util.ArrayList;
 
 public class ChatFormController {
     public ScrollPane emojiPane;
+    @FXML
+    private Label countLabel;
     @FXML
     private Button sendBtn;
     @FXML
@@ -60,6 +59,9 @@ public class ChatFormController {
         setScrollBar();
         validateMessage();
         n = n.toUpperCase();
+        setCountLabel();
+        Font emojiFont = new Font("Noto Color Emoji", 12);
+        messageFld.setFont(emojiFont);
         this.name = n;
          thread = new Thread(new Runnable() {
             @Override
@@ -83,6 +85,28 @@ public class ChatFormController {
             }
         });
         thread.start();
+    }
+
+    private void setCountLabel() {
+        new Thread(()->{
+            while (true){
+               if(messageFld.getText().isEmpty()){
+                     Platform.runLater(()->{
+                          countLabel.setText("0/100");
+                     });
+               }else {
+                   Platform.runLater(() -> {
+                       countLabel.setText(messageFld.getText().length() + "/100");
+                       messageFld.setDisable(messageFld.getText().length() >= 100);
+                   });
+               }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 
@@ -192,8 +216,10 @@ public class ChatFormController {
         emojis.add("\uD83D\uDE21");
         emojiBox.setPadding(new javafx.geometry.Insets(10,10,10,10));
         emojiBox.setSpacing(10);
+        Font font = Font.font("Noto Emoji", FontWeight.BOLD, 20);
         for (String emoji:emojis){
-            Label btn = new Label(emoji);
+            Label btn = new Label("<html>&#128516;</html>");
+            btn.setFont(font);
             btn.setStyle("-fx-font-size: 20px");
             btn.setOnMouseClicked(event -> {
                 messageFld.setText(messageFld.getText()+emoji);
@@ -255,6 +281,7 @@ public class ChatFormController {
                 alert.showAndWait();
             });
         }
+        messageFld.setDisable(false);
     }
 
     private void quit() {

@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 
 public class ChatDAOImpl implements ChatDAO {
-    private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
     @Override
     public void sendMessage(String message, Socket client) throws IOException {
@@ -65,6 +64,7 @@ public class ChatDAOImpl implements ChatDAO {
                 dataOutputStream.flush();
                 break;
             }
+            default: throw new IOException("Invalid file type");
         }
     }
 }

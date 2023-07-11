@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import lk.ijse.chatapplication.service.ServiceFactory;
 import lk.ijse.chatapplication.service.impl.LoginServiceImpl;
@@ -25,11 +26,13 @@ public class LoginFormController {
     private Button loginBtn;
     private final LoginService loginService = (LoginServiceImpl) ServiceFactory.getServiceFactory().getService(ServiceFactory.ServiceType.LOGIN);
     public void initialize(){
+        Font emojiFont = new Font("Segoe UI Emoji", 12);
+        nameFld.setFont(emojiFont);
         loginBtn.setTooltip(new Tooltip("Login To Chat"));
     }
     @FXML
     private void onAction(ActionEvent actionEvent) {
-        if(loginService.validateName(nameFld.getText())){
+        if(loginService.validateName(nameFld.getText()) && loginService.checkDuplicateName(nameFld.getText())){
             Stage stage = new Stage();
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/ChatForm.fxml"));
@@ -47,7 +50,10 @@ public class LoginFormController {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }else {
+        } else if (!loginService.checkDuplicateName(nameFld.getText())) {
+            nameFld.setStyle("-fx-border-color: red"+";"+"-fx-border-width: 2px"+";"+"-fx-border-radius: 20px");
+            nameFld.setTooltip(new Tooltip("Name already taken!"));
+        } else {
             nameFld.setStyle("-fx-border-color: red"+";"+"-fx-border-width: 2px"+";"+"-fx-border-radius: 20px");
             nameFld.setTooltip(new Tooltip("Please enter a valid name"));
         }
