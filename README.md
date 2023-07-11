@@ -17,7 +17,7 @@ Standole java chat applicatios can send and recieve messages between sockets
 
 
 
-## License!
+## License
 
 ![App Screenshot](https://i.creativecommons.org/l/by-nc/4.0/88x31.png)
 [Creative Commons Attribution-NonCommercial 4.0 International License](http://creativecommons.org/licenses/by-nc/4.0/)
